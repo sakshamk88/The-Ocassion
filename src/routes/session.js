@@ -18,7 +18,8 @@ sessionRouter.post("", async (req, res) => {
     if (user) {
       const sessionUser = sessionizeUser(user);
       req.session.user = sessionUser;
-      res.send(sessionUser);
+      console.log(req.sessionID);
+      res.status(200).send(req.session);
     } else {
       throw new Error("invalid details.");
     }
@@ -28,7 +29,7 @@ sessionRouter.post("", async (req, res) => {
 });
 
 //route to logout
-sessionRouter.delete("", ({ session }, res) => {
+sessionRouter.delete("/logout", (req, res) => {
   // req.user.tokens = req.user.tokens.filter((token) => {
   //   return token.token !== req.token;
   // });
@@ -47,12 +48,13 @@ sessionRouter.delete("", ({ session }, res) => {
   //   throw new Error("Something went wrong");
   // }
   try {
-    const user = session.user;
+    const user = req.session.user;
+
     if (user) {
       session.destroy((err) => {
-        if (err) throw err;
+        if (err) console.log(err);
         res.clearCookie(process.env.SESS_NAME);
-        res.send(user);
+        res.send(req.session.user);
       });
     } else {
       throw new Error("Something went wrong");
@@ -60,6 +62,10 @@ sessionRouter.delete("", ({ session }, res) => {
   } catch (err) {
     res.status(422).send(parseError(err));
   }
+});
+
+sessionRouter.get("/test", (req, res) => {
+  res.send(req.sessionID);
 });
 
 module.exports = sessionRouter;

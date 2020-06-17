@@ -4,10 +4,16 @@ const { userRouter, sessionRouter } = require("./routes/index");
 const connectStore = require("connect-mongo");
 const session = require("express-session");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const port = process.env.PORT;
 require("./db/mongoose");
 
 const app = express();
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.disable("x-powered-by");
 
 const MongoStore = connectStore(session);
@@ -36,6 +42,7 @@ app.use(
 
 const apiRouter = express.Router();
 app.use("/api", apiRouter);
+
 apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
 
