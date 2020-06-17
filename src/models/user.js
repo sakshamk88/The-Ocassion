@@ -69,14 +69,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    // tokens: [
+    //   {
+    //     token: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
     avatar: {
       type: Buffer,
     },
@@ -92,30 +92,32 @@ userSchema.virtual("propertirs", {
   localField: "_id",
   foreignField: "owner",
 });
+
 //fetching details
 userSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
   delete userObject.password;
-  delete userObject.tokens;
+  //delete userObject.tokens;
   delete userObject.avatar;
+  delete userObject.timestamps;
 
   return userObject;
 };
 
 //Token or session key generation
-userSchema.methods.generateAuthToken = async function () {
-  const user = this;
-  const token = jwt.sign(
-    { _id: user._id.toString() },
-    process.env.WEBTOKEN_SECRET
-  );
+// userSchema.methods.generateAuthToken = async function () {
+//   const user = this;
+//   const token = jwt.sign(
+//     { _id: user._id.toString() },
+//     process.env.WEBTOKEN_SECRET
+//   );
 
-  user.tokens = user.tokens.concat({ token });
-  await user.save();
-  return token;
-};
+//   user.tokens = user.tokens.concat({ token });
+//   await user.save();
+//   return token;
+// };
 
 //login checkup
 userSchema.statics.findByCredentials = async (email, password) => {
