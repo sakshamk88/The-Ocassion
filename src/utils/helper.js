@@ -1,5 +1,5 @@
 const parseError = (err) => {
-  if (err) return err.details[0];
+  if (err) return err;
   return JSON.stringify(err, Object.getOwnPropertyNames(err));
 };
 

@@ -19,7 +19,7 @@ sessionRouter.post("", async (req, res) => {
       const sessionUser = sessionizeUser(user);
       req.session.user = sessionUser;
       console.log(req.sessionID);
-      res.status(200).send(req.session);
+      res.status(200).send(req.session.id);
     } else {
       throw new Error("invalid details.");
     }
@@ -44,18 +44,18 @@ sessionRouter.delete("/logout", (req, res) => {
   //     res.clearCookie(process.env.SESS_NAME);
   //     res.send("Logged out successfully");
   //   });
-  // } else {
+  // } else
   //   throw new Error("Something went wrong");
   // }
   try {
-    const user = req.session.user;
-
+    const user = req.session;
     if (user) {
-      session.destroy((err) => {
-        if (err) console.log(err);
-        res.clearCookie(process.env.SESS_NAME);
-        res.send(req.session.user);
-      });
+      //   req.session.destroy((err) => {
+      //     if (err) console.log(err);
+      //     res.clearCookie(process.env.SESS_NAME);
+      //     res.send(req.session);
+      //   });
+      res.send(req.session.id);
     } else {
       throw new Error("Something went wrong");
     }
