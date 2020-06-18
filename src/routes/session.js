@@ -34,13 +34,13 @@ sessionRouter.post("", async (req, res) => {
 //route to logout
 sessionRouter.delete("", ({ session }, res) => {
   try {
+    const user = session.user;
     if (user) {
       //   req.session.destroy((err) => {
       //     if (err) console.log(err);
       //     res.clearCookie(process.env.SESS_NAME);
       //     res.send(session);
       //   });
-      const user = session.user;
 
       res.send(user);
     } else {
