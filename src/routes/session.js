@@ -1,8 +1,9 @@
 const express = require("express");
-const sessionRouter = new express.Router();
+
 const User = require("../models/user");
 //const auth = require("../middleware/auth");
-const { parseError, sessionizeUser } = require("../utils/helper");
+const { sessionizeUser } = require("../utils/helper");
+const sessionRouter = new express.Router();
 
 //route to login
 sessionRouter.post("", async (req, res) => {
@@ -15,11 +16,13 @@ sessionRouter.post("", async (req, res) => {
     // if (!user) {
     //   res.send("Please enter valid credentials.");
     // }
+    session = req.session;
     if (user) {
       const sessionUser = sessionizeUser(user);
+
       req.session.user = sessionUser;
-      console.log(req.sessionID);
-      res.status(200).send(req.session.id);
+      console.log(session.user);
+      res.status(200).send(sessionUser);
     } else {
       throw new Error("invalid details.");
     }
@@ -29,43 +32,28 @@ sessionRouter.post("", async (req, res) => {
 });
 
 //route to logout
-sessionRouter.delete("/logout", (req, res) => {
-  // req.user.tokens = req.user.tokens.filter((token) => {
-  //   return token.token !== req.token;
-  // });
-  // await req.user.save();
-
-  // res.send();
-  //console.log(session);
-  //const user = session.user;
-  // if () {
-  //   session.destroy((err) => {
-  //     if (err) throw err;
-  //     res.clearCookie(process.env.SESS_NAME);
-  //     res.send("Logged out successfully");
-  //   });
-  // } else
-  //   throw new Error("Something went wrong");
-  // }
+sessionRouter.delete("", ({ session }, res) => {
   try {
-    const user = req.session;
     if (user) {
       //   req.session.destroy((err) => {
       //     if (err) console.log(err);
       //     res.clearCookie(process.env.SESS_NAME);
-      //     res.send(req.session);
+      //     res.send(session);
       //   });
-      res.send(req.session.id);
+      const user = session.user;
+
+      res.send(user);
     } else {
       throw new Error("Something went wrong");
     }
   } catch (err) {
-    res.status(422).send(parseError(err));
+    console.log(session);
+    res.status(422).send(JSON.stringify(err));
   }
 });
 
-sessionRouter.get("/test", (req, res) => {
-  res.send(req.sessionID);
+sessionRouter.get("/", (req, res) => {
+  res.send(req.session.id);
 });
 
 module.exports = sessionRouter;

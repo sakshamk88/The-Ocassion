@@ -1,6 +1,6 @@
 const express = require("express");
 const { userRouter, sessionRouter } = require("./routes/index");
-
+const cookieParser = require("cookie-parser");
 const connectStore = require("connect-mongo");
 const session = require("express-session");
 const mongoose = require("mongoose");
@@ -18,9 +18,9 @@ app.disable("x-powered-by");
 
 const MongoStore = connectStore(session);
 
-app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.use(
   session({
     name: process.env.SESS_NAME,
@@ -30,11 +30,11 @@ app.use(
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "session",
-      ttl: parseInt(process.env.SESS_LIFETIME) / 1000,
+      ttl: parseInt(process.env.SESS_LIFETIME),
     }),
     cookie: {
       sameSite: true,
-      secure: process.env.NODE_ENV === "development",
+      secure: process.env.NODE_ENV === "production",
       maxAge: parseInt(process.env.SESS_LIFETIME),
     },
   })
