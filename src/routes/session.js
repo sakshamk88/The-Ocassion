@@ -4,7 +4,13 @@ const User = require("../models/user");
 //const auth = require("../middleware/auth");
 const { sessionizeUser } = require("../utils/helper");
 const sessionRouter = new express.Router();
-
+const test = (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    throw new Error("kachra ho gya!!");
+  }
+};
 //route to login
 sessionRouter.post("", async (req, res) => {
   try {
@@ -16,13 +22,13 @@ sessionRouter.post("", async (req, res) => {
     // if (!user) {
     //   res.send("Please enter valid credentials.");
     // }
-    session = req.session;
+
     if (user) {
       const sessionUser = sessionizeUser(user);
 
       req.session.user = sessionUser;
-      console.log(session.user);
-      res.status(200).send(sessionUser);
+      console.log(req.session.id);
+      res.send(req.session.user);
     } else {
       throw new Error("invalid details.");
     }
@@ -35,14 +41,13 @@ sessionRouter.post("", async (req, res) => {
 sessionRouter.delete("", ({ session }, res) => {
   try {
     const user = session.user;
+    console.log(session.id);
     if (user) {
-      //   req.session.destroy((err) => {
-      //     if (err) console.log(err);
-      //     res.clearCookie(process.env.SESS_NAME);
-      //     res.send(session);
-      //   });
-
-      res.send(user);
+      session.destroy((err) => {
+        if (err) console.log(err);
+        res.clearCookie(process.env.SESS_NAME);
+        res.send(session.id);
+      });
     } else {
       throw new Error("Something went wrong");
     }
@@ -52,8 +57,9 @@ sessionRouter.delete("", ({ session }, res) => {
   }
 });
 
-sessionRouter.get("/", (req, res) => {
-  res.send(req.session.id);
+sessionRouter.get("", (req, res) => {
+  console.log(req.session).id;
+  res.send(req.session);
 });
 
 module.exports = sessionRouter;

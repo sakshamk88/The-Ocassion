@@ -26,16 +26,16 @@ app.use(
     name: process.env.SESS_NAME,
     secret: process.env.SESS_SECRET,
     saveUninitialized: false,
-    resave: false,
+    resave: true,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
-      collection: "session",
-      ttl: parseInt(process.env.SESS_LIFETIME),
+      collection: "sessions",
+      ttl: parseInt(process.env.SESS_LIFETIME) / 1000,
     }),
     cookie: {
       sameSite: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: parseInt(process.env.SESS_LIFETIME),
+      expires: parseInt(process.env.SESS_LIFETIME),
     },
   })
 );
