@@ -5,34 +5,41 @@ const connectStore = require("connect-mongo");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const port = process.env.PORT;
 require("./db/mongoose");
 
+const publicDirectoryPath = path.join(__dirname, "../public");
 const app = express();
+
+app.disable("x-powered-by");
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.delete("*", function (req, res, next) {
+  console.log(req.cookies);
+
+  next();
+});
 app.use(
   cors({
     origin: "*",
   })
 );
-app.disable("x-powered-by");
-
 const MongoStore = connectStore(session);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use(
   session({
     name: process.env.SESS_NAME,
     secret: process.env.SESS_SECRET,
     saveUninitialized: false,
-    resave: true,
+    resave: false,
     store: new MongoStore({
       mongooseConnection: mongoose.connection,
       collection: "sessions",
       ttl: parseInt(process.env.SESS_LIFETIME) / 1000,
     }),
     cookie: {
+      path: "/",
       sameSite: true,
       secure: process.env.NODE_ENV === "production",
       expires: parseInt(process.env.SESS_LIFETIME),
@@ -41,13 +48,14 @@ app.use(
 );
 
 const apiRouter = express.Router();
-app.use("/api", apiRouter);
-
+// app.set("static", path.join(__dirname, "./public"));
 apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
 
-app.listen(port, () => {
-  console.log("Server running on port " + port);
+app.use("/api", apiRouter);
+
+app.listen(process.env.PORT, () => {
+  console.log("Server running on port " + process.env.PORT);
 });
 
 module.exports = app;

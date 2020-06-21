@@ -4,13 +4,7 @@ const User = require("../models/user");
 //const auth = require("../middleware/auth");
 const { sessionizeUser } = require("../utils/helper");
 const sessionRouter = new express.Router();
-const test = (req, res, next) => {
-  if (req.session.user) {
-    next();
-  } else {
-    throw new Error("kachra ho gya!!");
-  }
-};
+
 //route to login
 sessionRouter.post("", async (req, res) => {
   try {
@@ -27,6 +21,7 @@ sessionRouter.post("", async (req, res) => {
       const sessionUser = sessionizeUser(user);
 
       req.session.user = sessionUser;
+
       console.log(req.session.id);
       res.send(req.session.user);
     } else {
@@ -41,8 +36,9 @@ sessionRouter.post("", async (req, res) => {
 sessionRouter.delete("", ({ session }, res) => {
   try {
     const user = session.user;
-    console.log(session.id);
+
     if (user) {
+      console.log(session.id);
       session.destroy((err) => {
         if (err) console.log(err);
         res.clearCookie(process.env.SESS_NAME);
@@ -52,14 +48,14 @@ sessionRouter.delete("", ({ session }, res) => {
       throw new Error("Something went wrong");
     }
   } catch (err) {
-    console.log(session);
-    res.status(422).send(JSON.stringify(err));
+    //console.log("things went wrong!");
+    res.send(err);
   }
 });
 
 sessionRouter.get("", (req, res) => {
-  console.log(req.session).id;
-  res.send(req.session);
+  console.log(req.session.id);
+  res.send(req.session.user);
 });
 
 module.exports = sessionRouter;
