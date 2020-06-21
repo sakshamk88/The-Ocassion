@@ -4,6 +4,7 @@ const cookieParser = require("cookie-parser");
 const connectStore = require("connect-mongo");
 const session = require("express-session");
 const mongoose = require("mongoose");
+const path = require("path");
 const cors = require("cors");
 require("./db/mongoose");
 
@@ -15,16 +16,13 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.delete("*", function (req, res, next) {
-  console.log(req.cookies);
 
-  next();
-});
 app.use(
   cors({
     origin: "*",
   })
 );
+app.use(express.static(publicDirectoryPath));
 const MongoStore = connectStore(session);
 
 app.use(
