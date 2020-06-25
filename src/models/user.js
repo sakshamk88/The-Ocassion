@@ -93,18 +93,24 @@ userSchema.virtual("propertirs", {
   foreignField: "owner",
 });
 
+userSchema.virtual("bookings", {
+  ref: "Bookings",
+  localField: "_id",
+  foreignField: "own",
+});
+
 //fetching details
-userSchema.methods.toJSON = function () {
-  const user = this;
-  const userObject = user.toObject();
+// userSchema.methods.toJSON = function () {
+//   const user = this;
+//   const userObject = user.toObject();
 
-  delete userObject.password;
-  //delete userObject.tokens;
-  delete userObject.avatar;
-  delete userObject.timestamps;
+//   delete userObject.password;
+//   //delete userObject.tokens;
+//   delete userObject.avatar;
+//   delete userObject.timestamps;
 
-  return userObject;
-};
+//   return userObject;
+// };
 
 //Token or session key generation
 // userSchema.methods.generateAuthToken = async function () {

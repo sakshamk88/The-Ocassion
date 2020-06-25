@@ -6,6 +6,7 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
+const bookingrouter = require("./routes/booking-routes");
 require("./db/mongoose");
 
 const publicDirectoryPath = path.join(__dirname, "../public");
@@ -49,6 +50,7 @@ const apiRouter = express.Router();
 // app.set("static", path.join(__dirname, "./public"));
 apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
+apiRouter.use("/bookings", bookingrouter);
 
 app.use("/api", apiRouter);
 

@@ -52,6 +52,12 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
+userSchema.virtual("Bookings", {
+  ref: "bookings",
+  localField: "_id",
+  foreignField: "property",
+});
+
 const Properties = mongoose.model("Properties", propertySchema);
 
 module.exports = Properties;

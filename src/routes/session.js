@@ -1,8 +1,9 @@
 const express = require("express");
 
 const User = require("../models/user");
-//const auth = require("../middleware/auth");
-const { sessionizeUser } = require("../utils/helper");
+
+const { sessionizeUser, filterdata } = require("../utils/helper");
+
 const sessionRouter = new express.Router();
 
 //route to login
@@ -32,6 +33,23 @@ sessionRouter.post("", async (req, res) => {
   }
 });
 
+//return user details
+sessionRouter.post("/profile", async (req, res) => {
+  const session = req.session;
+  if (!session.user) {
+    res.status(401).send("You are nort authorised.");
+  }
+  try {
+    const userData = await User.findById(session.user.userId);
+
+    if (!userData) {
+      res.status(500).send("There is no user with this id.");
+    }
+    data = filterdata(userData);
+    res.status(200).send(data);
+  } catch (err) {}
+});
+
 //route to logout
 sessionRouter.delete("", ({ session }, res) => {
   try {
@@ -53,6 +71,7 @@ sessionRouter.delete("", ({ session }, res) => {
   }
 });
 
+//Test API
 sessionRouter.get("", (req, res) => {
   console.log(req.session.id);
   res.send(req.session.user);
