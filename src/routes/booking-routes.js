@@ -21,7 +21,7 @@ bookingrouter.post("/book", (req, res) => {
     }
 })
 
-//get all the bookings of a particular owner
+//get all the bookings of a particular owner(admin)
 bookingrouter.get("", async (req, res) => {
   const session = req.session;
   if (!session.user) {
@@ -45,7 +45,7 @@ bookingrouter.get("", async (req, res) => {
   }
 });
 
-//get client specific bookings
+//get client specific bookings( only those for that specific client )
 bookingrouter.post("/user", async (req, res) => {
   const session = req.session;
 
@@ -56,7 +56,7 @@ bookingrouter.post("/user", async (req, res) => {
   }
 
   try {
-    const userBookings = await Bookings.findAll({ _id: req.body.userId });
+    const userBookings = await Bookings.findAll({ client : req.body.userId });
     if (!userBookings) {
       throw new Error("Can't find any bookings for this user.");
     }
