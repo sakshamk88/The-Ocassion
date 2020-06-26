@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validatore");
+const validator = require("validator");
 
 const bookingSchema = new mongoose.Schema({
   propertyId: {
