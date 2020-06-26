@@ -9,9 +9,7 @@ bookingrouter.post("/book", (req, res) => {
     if (!session.user) {
       res.status(401).send("You are not authenticated.");
     }
-
-    try{
-        
+    try{  
         const newBooking = new Bookings(req.body);
         await newBooking.save();
         res.status(200).send("Booking Made")
@@ -56,11 +54,15 @@ bookingrouter.post("/user", async (req, res) => {
   }
 
   try {
+    const currDate  = new Date();
     const userBookings = await Bookings.findAll({ client : req.body.userId });
-    if (!userBookings) {
+    const bookings = await userBookings.map((booking) => {
+        return booking.date >= currDate;
+    })
+    if (!bookings) {
       throw new Error("Can't find any bookings for this user.");
     }
-    res.status(200).send(userBookings);
+    res.status(200).send(bookings);
   } catch (err) {
     res.status(500).send({ error: err });
   }

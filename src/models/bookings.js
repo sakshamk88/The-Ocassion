@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validatore");
 
 const bookingSchema = new mongoose.Schema({
-  property: {
+  propertyId: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Properties",

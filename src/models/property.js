@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
+    pId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       trim: true,
