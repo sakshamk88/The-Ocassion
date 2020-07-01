@@ -91,11 +91,11 @@ sessionRouter.get("", (req, res) => {
 sessionRouter.post("/property", async (req, res) => {
   const result = propChecker(req.body);
   if (result.errors.length != 0) {
-    res.status(400).send(
-      result.errors.map((error) => {
+    res.status(400).send({
+      Error: result.errors.map((error) => {
         return `${error.argument} is required!`;
-      })
-    );
+      }),
+    });
   }
   const property = new Property({
     ...req.body,
