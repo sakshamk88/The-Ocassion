@@ -88,7 +88,7 @@ sessionRouter.get("", (req, res) => {
 });
 
 //Route to book a priority
-router.post("/property", async (req, res) => {
+sessionRouter.post("/property", async (req, res) => {
   const result = propChecker(req.body);
   if (result.errors.length != 0) {
     res.status(400).send(
