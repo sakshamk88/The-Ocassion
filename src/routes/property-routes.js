@@ -1,9 +1,9 @@
 const express = require("express");
 const router = new express.Router();
 const Property = require("../models/property");
-const auth = require("../middleware/auth");
+//const auth = require("../middleware/auth");
 
-router.post("/properties", auth, async (req, res) => {
+router.post("/property", async (req, res) => {
   const property = new Property({
     ...req.body,
     owner: req.user._id,

@@ -1,14 +1,24 @@
 const express = require("express");
-
 const User = require("../models/user");
-
 const { sessionizeUser, filterdata } = require("../utils/helper");
+const { loginChecker, propChecker } = require("../middleware/schema");
 
 const sessionRouter = new express.Router();
 
 //route to login
 sessionRouter.post("", async (req, res) => {
   try {
+    const result = loginChecker(req.body);
+    if (result.errors.length != 0) {
+      console.log(result);
+      res.status(400).send({
+        Error: result.errors.map((error) => {
+          return `${error.argument} is required!`;
+        }),
+      });
+      return;
+    }
+
     const user = await User.findByCredentials(
       req.body.email,
       req.body.password
@@ -29,7 +39,7 @@ sessionRouter.post("", async (req, res) => {
       throw new Error("invalid details.");
     }
   } catch (e) {
-    res.status(400).send(e);
+    res.status(500).send(e);
   }
 });
 
@@ -75,6 +85,28 @@ sessionRouter.delete("", ({ session }, res) => {
 sessionRouter.get("", (req, res) => {
   console.log(req.session.id);
   res.send(req.session.user);
+});
+
+//Route to book a priority
+router.post("/property", async (req, res) => {
+  const result = propChecker(req.body);
+  if (result.errors.length != 0) {
+    res.status(400).send(
+      result.errors.map((error) => {
+        return `${error.argument} is required!`;
+      })
+    );
+  }
+  const property = new Property({
+    ...req.body,
+    owner: req.user._id,
+  });
+  try {
+    await property.save();
+    res.status(201).send(property);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 module.exports = sessionRouter;

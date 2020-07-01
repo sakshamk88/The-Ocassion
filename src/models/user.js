@@ -58,11 +58,10 @@ const userSchema = new mongoose.Schema(
     experience: {
       type: Number,
     },
-    firmName: {
-      type: String,
-    },
+
     website: {
       type: String,
+      default: "None",
     },
 
     role: {
