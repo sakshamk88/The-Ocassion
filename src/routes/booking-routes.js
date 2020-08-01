@@ -1,10 +1,10 @@
 const express = require("express");
 const Bookings = require("../models/bookings");
-
+const auth = require("../middleware/auth");
 const bookingrouter = new express.Router();
 
 //make a booking
-bookingrouter.post("/book", async (req, res) => {
+bookingrouter.post("/book", auth, async (req, res) => {
   const session = req.session;
   if (!session.user) {
     res.status(401).send("You are not authenticated.");
@@ -19,7 +19,7 @@ bookingrouter.post("/book", async (req, res) => {
 });
 
 //get all the bookings of a particular owner(admin)
-bookingrouter.get("", async (req, res) => {
+bookingrouter.get("", auth, async (req, res) => {
   const session = req.session;
   if (!session.user) {
     res.status(401).send("You are not authenticated.");
@@ -42,7 +42,7 @@ bookingrouter.get("", async (req, res) => {
 });
 
 //get client specific bookings( only those for that specific client )
-bookingrouter.post("/user", async (req, res) => {
+bookingrouter.post("/user", auth, async (req, res) => {
   const session = req.session;
 
   if (!session.user) {
@@ -64,6 +64,22 @@ bookingrouter.post("/user", async (req, res) => {
   } catch (err) {
     res.status(500).send({ error: err });
   }
+});
+
+//check if the date is booked
+bookingrouter.get("/isbooked", async (req, res) => {
+  const propertyId = req.query.propertyId;
+  const date = [req.query.day, req.query.month, req.query.year].join("-");
+
+  try {
+    const booking = Bookings.find({ propertyId: propertyId });
+    const isBooked = date === booking.date;
+    if (isBooked) {
+      res.status(500).send({ isBooked: false });
+    }
+    console.log(date, propertyId);
+    res.status(200).send({ isBooked: true });
+  } catch (error) {}
 });
 
 module.exports = bookingrouter;

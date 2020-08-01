@@ -2,11 +2,11 @@ const express = require("express");
 const User = require("../models/user");
 const { sessionizeUser, filterdata } = require("../utils/helper");
 const { loginChecker, propChecker } = require("../middleware/schema");
-
+const auth = require("../middleware/auth");
 const sessionRouter = new express.Router();
 
 //route to login
-sessionRouter.post("", async (req, res) => {
+sessionRouter.post("", auth, async (req, res) => {
   try {
     const result = loginChecker(req.body);
     if (result.errors.length != 0) {
@@ -44,7 +44,7 @@ sessionRouter.post("", async (req, res) => {
 });
 
 //return user details
-sessionRouter.post("/profile", async (req, res) => {
+sessionRouter.post("/profile", auth, async (req, res) => {
   const session = req.session;
   if (!session.user) {
     res.status(401).send("You are nort authorised.");
@@ -61,7 +61,7 @@ sessionRouter.post("/profile", async (req, res) => {
 });
 
 //route to logout
-sessionRouter.delete("", ({ session }, res) => {
+sessionRouter.delete("", auth, ({ session }, res) => {
   try {
     const user = session.user;
 
@@ -88,7 +88,7 @@ sessionRouter.get("", (req, res) => {
 });
 
 //Route to book a priority
-sessionRouter.post("/property", async (req, res) => {
+sessionRouter.post("/property", auth, async (req, res) => {
   const result = propChecker(req.body);
   if (result.errors.length != 0) {
     res.status(400).send({
