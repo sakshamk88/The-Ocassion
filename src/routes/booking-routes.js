@@ -77,7 +77,7 @@ bookingrouter.get("/isbooked", async (req, res) => {
     if (isBooked) {
       res.status(500).send({ isBooked: false });
     }
-    console.log(date, propertyId);
+    //console.log(date, propertyId);
     res.status(200).send({ isBooked: true });
   } catch (error) {}
 });

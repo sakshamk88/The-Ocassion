@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 const sessionRouter = new express.Router();
 
 //route to login
-sessionRouter.post("", auth, async (req, res) => {
+sessionRouter.post("", async (req, res) => {
   try {
     const result = loginChecker(req.body);
     if (result.errors.length != 0) {
