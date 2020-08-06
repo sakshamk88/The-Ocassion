@@ -90,6 +90,10 @@ bookingrouter.get("/isbooked", async (req, res) => {
   } catch (error) {}
 });
 
+//update booking
+
+//booking details by booking id
+
 //cancel booking
 bookingrouter.delete("/cancelbooking", auth, (req, res) => {
   const user = User.find({ _id: req.session.user.userId });
