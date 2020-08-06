@@ -11,10 +11,10 @@ bookingrouter.post("/book", auth, async (req, res) => {
   }
   try {
     if (
-      !req.body.name ||
-      !req.body.phoneno ||
-      !req.body.ocassion ||
-      !req.body.date
+      !req.body.Customer_Name ||
+      !req.body.phone ||
+      !req.body.Ocassion ||
+      !req.body.Booking_date
     ) {
       res.status(402).send({ Error: "REquired data is missing." });
     }
