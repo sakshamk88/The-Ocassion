@@ -10,6 +10,14 @@ bookingrouter.post("/book", auth, async (req, res) => {
     res.status(401).send("You are not authenticated.");
   }
   try {
+    if (
+      !req.body.name ||
+      !req.body.phoneno ||
+      !req.body.ocassion ||
+      !req.body.date
+    ) {
+      res.status(402).send({ Error: "REquired data is missing." });
+    }
     const newBooking = new Bookings(req.body);
     await newBooking.save();
     res.status(200).send("Booking Made");
@@ -74,12 +82,25 @@ bookingrouter.get("/isbooked", async (req, res) => {
   try {
     const booking = Bookings.find({ propertyId: propertyId });
     const isBooked = date === booking.date;
-    if (isBooked) {
-      res.status(500).send({ isBooked: false });
+    if (!isBooked) {
+      res.status(200).send({ isBooked: false });
     }
     //console.log(date, propertyId);
-    res.status(200).send({ isBooked: true });
+    res.status(200).send({ isBooked: true, bookingId: booking._id });
   } catch (error) {}
+});
+
+//cancel booking
+bookingrouter.delete("/cancelbooking", auth, (req, res) => {
+  const user = User.find({ _id: req.session.user.userId });
+  if (!user) {
+    res.status(404).send({ Error: "Not authenticated." });
+  }
+  if (user.role !== "admin") {
+    res.status(402).send({ Error: "User Not authorized." });
+  }
+  Bookings.delete({ _id: req.body.id });
+  res.status(200).send("Booking cancelled successfully.");
 });
 
 module.exports = bookingrouter;
