@@ -95,7 +95,7 @@ bookingrouter.get("/isbooked", async (req, res) => {
 //booking details by booking id
 
 //cancel booking
-bookingrouter.delete("/cancelbooking", auth, (req, res) => {
+bookingrouter.delete("/booking", auth, (req, res) => {
   const user = User.find({ _id: req.session.user.userId });
   if (!user) {
     res.status(404).send({ Error: "Not authenticated." });
