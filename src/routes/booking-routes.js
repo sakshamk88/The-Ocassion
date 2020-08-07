@@ -4,7 +4,7 @@ const auth = require("../middleware/auth");
 const bookingrouter = new express.Router();
 
 //make a booking
-bookingrouter.post("/book", auth, async (req, res) => {
+bookingrouter.post("", auth, async (req, res) => {
   const session = req.session;
   if (!session.user) {
     res.status(401).send("You are not authenticated.");
@@ -39,9 +39,9 @@ bookingrouter.get("", auth, async (req, res) => {
   //const allbookings = await Bookings.find().gt("date", new Date());
   try {
     const allBookings = await Bookings.findAll({ owner: session.user.userId });
-    const currDate = new Date();
+    const currDate = req.query.date;
     const bookings = await allBookings.filter((booking) => {
-      return booking.date >= currDate;
+      return booking.date.getMonth() === currDate.getMonth();
     });
     res.status(200).send(bookings);
   } catch (err) {
@@ -49,33 +49,33 @@ bookingrouter.get("", auth, async (req, res) => {
   }
 });
 
-//get client specific bookings( only those for that specific client )
-bookingrouter.post("/user", auth, async (req, res) => {
-  const session = req.session;
+// get client specific bookings( only those for that specific client )
+// bookingrouter.post("/user", auth, async (req, res) => {
+//   const session = req.session;
 
-  if (!session.user) {
-    res
-      .status(401)
-      .send("You are not authenticated. No valid session provided.");
-  }
+//   if (!session.user) {
+//     res
+//       .status(401)
+//       .send("You are not authenticated. No valid session provided.");
+//   }
 
-  try {
-    const currDate = new Date();
-    const userBookings = await Bookings.findAll({ client: req.body.userId });
-    const bookings = await userBookings.map((booking) => {
-      return booking.date >= currDate;
-    });
-    if (!bookings) {
-      throw new Error("Can't find any bookings for this user.");
-    }
-    res.status(200).send(bookings);
-  } catch (err) {
-    res.status(500).send({ error: err });
-  }
-});
+//   try {
+//     const currDate = new Date();
+//     const userBookings = await Bookings.findAll({ client: req.body.userId });
+//     const bookings = await userBookings.map((booking) => {
+//       return booking.date >= currDate;
+//     });
+//     if (!bookings) {
+//       throw new Error("Can't find any bookings for this user.");
+//     }
+//     res.status(200).send(bookings);
+//   } catch (err) {
+//     res.status(500).send({ error: err });
+//   }
+// });
 
 //check if the date is booked
-bookingrouter.get("/isbooked", async (req, res) => {
+bookingrouter.get("/isbooked", auth, async (req, res) => {
   const propertyId = req.query.propertyId;
   const date = [req.query.day, req.query.month, req.query.year].join("-");
 
