@@ -39,9 +39,12 @@ bookingrouter.get("", auth, async (req, res) => {
   //const allbookings = await Bookings.find().gt("date", new Date());
   try {
     const allBookings = await Bookings.findAll({ owner: session.user.userId });
-    const currDate = req.query.date;
+    const month = req.query.month;
+    const year = req.query.year;
     const bookings = await allBookings.filter((booking) => {
-      return booking.date.getMonth() === currDate.getMonth();
+      return (
+        booking.date.getMonth() === month && booking.date.getYear() === year
+      );
     });
     res.status(200).send(bookings);
   } catch (err) {
