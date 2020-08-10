@@ -8,9 +8,11 @@ router.post("/property", auth, async (req, res) => {
     ...req.body,
     owner: req.user._id,
   });
+
   try {
     await property.save();
-    res.status(201).send(property);
+    req.session.propertyId = property._id;
+    res.status(201).send({ propertyID: property._id });
   } catch (e) {
     res.status(500).send(e);
   }
