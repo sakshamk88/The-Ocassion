@@ -20,12 +20,13 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate(value) {
-      if (!(value === "text" || value === "text" || value === "text")) {
+      if (!(value === "day" || value === "night")) {
         throw new Error(
           "The time should be selected from the given values only."
         );
       }
     },
+    default: "day",
   },
   client: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +41,7 @@ const bookingSchema = new mongoose.Schema({
   priority: {
     type: String,
     required: true,
+    default: "Low",
   },
   tokenMoney: {
     body: {

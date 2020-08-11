@@ -1,5 +1,6 @@
 const express = require("express");
 const { userRouter, sessionRouter } = require("./routes/index");
+const propertyRouter = require("./routes/property-routes");
 const cookieParser = require("cookie-parser");
 const connectStore = require("connect-mongo");
 const session = require("express-session");
@@ -67,6 +68,7 @@ const apiRouter = express.Router();
 apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
 apiRouter.use("/bookings", bookingrouter);
+apiRouter.use("/property", propertyRouter);
 
 app.use("/api", apiRouter);
 

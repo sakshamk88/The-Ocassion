@@ -1,14 +1,14 @@
 const express = require("express");
-const router = new express.Router();
+const propertyRouter = new express.Router();
 const Property = require("../models/property");
 const auth = require("../middleware/auth");
 
-router.post("/property", auth, async (req, res) => {
+propertyRouter.post("", auth, async (req, res) => {
+  req.body.owner = req.session.user.userId;
   const property = new Property({
     ...req.body,
-    owner: req.user._id,
   });
-
+  console.log(req.body);
   try {
     await property.save();
     req.session.propertyId = property._id;
@@ -17,3 +17,5 @@ router.post("/property", auth, async (req, res) => {
     res.status(500).send(e);
   }
 });
+
+module.exports = propertyRouter;

@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema(
   {
-    pId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
     name: {
       type: String,
       trim: true,
@@ -14,7 +9,7 @@ const propertySchema = new mongoose.Schema(
     },
     size: {
       type: Number,
-      default: false,
+      default: 1000,
     },
     address: {
       type: String,
@@ -23,6 +18,7 @@ const propertySchema = new mongoose.Schema(
     capacity: {
       type: Number,
       required: true,
+      default: 500,
     },
     features: [
       {
@@ -34,6 +30,7 @@ const propertySchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
+      default: 1000,
     },
     reviews: [
       {
@@ -57,10 +54,10 @@ const propertySchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual("Bookings", {
+propertySchema.virtual("Bookings", {
   ref: "bookings",
   localField: "_id",
-  foreignField: "property",
+  foreignField: "propertyId",
 });
 
 const Properties = mongoose.model("Properties", propertySchema);

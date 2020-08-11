@@ -95,7 +95,7 @@ userSchema.virtual("propertirs", {
 userSchema.virtual("bookings", {
   ref: "Bookings",
   localField: "_id",
-  foreignField: "own",
+  foreignField: "owner",
 });
 
 //fetching details
