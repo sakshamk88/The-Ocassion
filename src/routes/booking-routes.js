@@ -105,7 +105,7 @@ bookingrouter.get("/:bId", auth, async (req, res) => {
     res.status(404).send({ Error: "No id found." });
   }
   try {
-    const bookingDetails = await Bookings.findById(req.params.bid);
+    const bookingDetails = await Bookings.findById(req.params.bId);
     if (!bookingDetails) {
       res.status(404).send({ Error: "No booking found with given id." });
     }
