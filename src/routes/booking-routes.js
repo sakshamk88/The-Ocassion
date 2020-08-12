@@ -8,9 +8,9 @@ const bookingrouter = new express.Router();
 bookingrouter.post("", auth, async (req, res) => {
   if (
     !req.body.Booking_date ||
-    req.body.Ocassion ||
-    req.body.phone ||
-    req.body.Customer_Name
+    !req.body.Ocassion ||
+    !req.body.phone ||
+    !req.body.Customer_Name
   ) {
     res.status(402).send({ Error: "Required data is missing." });
   }
@@ -100,6 +100,20 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 //update booking
 
 //booking details by booking id
+bookingrouter.get("/:bId", auth, async (req, res) => {
+  if (!req.params.bId) {
+    res.status(404).send({ Error: "No id found." });
+  }
+  try {
+    const bookingDetails = await Bookings.findById(req.params.bid);
+    if (!bookingDetails) {
+      res.status(404).send({ Error: "No booking found with given id." });
+    }
+    res.status(200).send(bookingDetails);
+  } catch (error) {
+    res.status(500).send({ Error: "No booking found with given id." });
+  }
+});
 
 //cancel booking
 bookingrouter.delete("/booking", auth, (req, res) => {
