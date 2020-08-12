@@ -24,6 +24,9 @@ bookingrouter.post("", auth, async (req, res) => {
     date: req.body.Booking_date,
     client: req.session.user.userId,
     owner: owner.owner,
+    customerName: req.body.Customer_Name,
+    ocassion: req.body.Ocassion,
+    phoneNo: req.body.phone,
   };
   const newBooking = new Bookings(bookingData);
   await newBooking.save();
