@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/user");
+const Property = require("../models/property");
 const { sessionizeUser, filterdata } = require("../utils/helper");
 const { loginChecker, propChecker } = require("../middleware/schema");
 const auth = require("../middleware/auth");
@@ -32,13 +33,21 @@ sessionRouter.post("", async (req, res) => {
       const sessionUser = sessionizeUser(user);
 
       req.session.user = sessionUser;
+      const propertyId = await Property.findOne({ owner: user._id }).select(
+        "_id"
+      );
 
+      if (!propertyId) {
+        res.status(500).send({ Error: "No owner forund." });
+      }
+      req.session.propertyId = propertyId;
       console.log(req.session.id);
       res.send(req.session.user);
     } else {
       throw new Error("invalid details.");
     }
   } catch (e) {
+    //console.log(user._id);
     res.status(500).send(e);
   }
 });

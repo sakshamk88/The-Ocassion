@@ -3,6 +3,7 @@ const auth = async (req, res, next) => {
     const session = req.session;
     if (!session.user) {
       res.status(401).send({ Error: "User not authenticated." });
+      return;
     }
     next();
   } catch (error) {

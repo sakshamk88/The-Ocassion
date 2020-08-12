@@ -6,33 +6,28 @@ const bookingrouter = new express.Router();
 
 //make a booking
 bookingrouter.post("", auth, async (req, res) => {
-  const session = req.session;
-  if (!session.user) {
-    res.status(401).send("You are not authenticated.");
+  if (
+    !req.body.Booking_date ||
+    req.body.Ocassion ||
+    req.body.phone ||
+    req.body.Customer_Name
+  ) {
+    res.status(402).send({ Error: "Required data is missing." });
   }
-  try {
-    if (false) {
-      res.status(402).send({ Error: "Required data is missing." });
-    }
-    const owner = await Property.findById(req.session.propertyId).select(
-      "owner"
-    );
-    //const ownerId = owner.owner;
-    if (!owner.owner) {
-      res.status(500).send({ Error: "No owner Registered." });
-    }
-    const bookingData = {
-      propertyId: req.session.propertyId,
-      date: req.body.Booking_date,
-      client: req.session.user.userId,
-      owner: owner.owner,
-    };
-    const newBooking = new Bookings(bookingData);
-    await newBooking.save();
-    res.status(200).send({ bookingId: newBooking._id });
-  } catch (err) {
-    res.status(500).send(err);
+  const owner = await Property.findById(req.session.propertyId).select("owner");
+  //const ownerId = owner.owner;
+  if (!owner.owner) {
+    res.status(500).send({ Error: "No owner Registered." });
   }
+  const bookingData = {
+    propertyId: req.session.propertyId,
+    date: req.body.Booking_date,
+    client: req.session.user.userId,
+    owner: owner.owner,
+  };
+  const newBooking = new Bookings(bookingData);
+  await newBooking.save();
+  res.status(200).send({ bookingId: newBooking._id });
 });
 
 //get all the bookings of a particular owner(admin)

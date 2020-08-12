@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    required: true,
+
     validate(value) {
       if (!validator.isDate(value)) {
         throw new Error("The date is not valid.");
