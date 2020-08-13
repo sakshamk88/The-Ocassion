@@ -93,7 +93,7 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
     const booking = Bookings.find({ propertyId: propertyId });
     const isBooked = date === booking.date.getDate();
     if (!isBooked) {
-      res.status(200).send({ isBooked: false });
+      res.status(200).send({ isBooked: false, bookingId: undefined });
     }
     //console.log(date, propertyId);
     res.status(200).send({ isBooked: true, bookingId: booking._id });
