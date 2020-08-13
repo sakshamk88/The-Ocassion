@@ -22,10 +22,10 @@ const bookingSchema = new mongoose.Schema({
   },
 
   date: {
-    type: Date,
+    type: String,
 
     validate(value) {
-      if (!validator.isDate(value)) {
+      if (false) {
         throw new Error("The date is not valid.");
       }
     },

@@ -19,9 +19,10 @@ bookingrouter.post("", auth, async (req, res) => {
   if (!owner.owner) {
     res.status(500).send({ Error: "No owner Registered." });
   }
+  const fdate = req.body.Booking_date.split("T");
   const bookingData = {
     propertyId: req.session.propertyId,
-    date: req.body.Booking_date,
+    date: fdate[0],
     client: req.session.user.userId,
     owner: owner.owner,
     customerName: req.body.Customer_Name,
@@ -87,17 +88,24 @@ bookingrouter.get("", auth, async (req, res) => {
 //check if the date is booked
 bookingrouter.get("/isbooked", auth, async (req, res) => {
   const propertyId = req.session.propertyId;
-  const date = req.body.date.getDate();
+  const date = [req.query.year, req.query.month, req.query.day].join("-");
 
   try {
-    const booking = Bookings.find({ propertyId: propertyId });
-    const isBooked = date === booking.date.getDate();
-    if (!isBooked) {
-      res.status(200).send({ isBooked: false, bookingId: undefined });
+    console.log(date);
+    const booking = Bookings.find({
+      propertyId: propertyId,
+      date: date,
+    });
+    console.log(booking);
+    if (!booking) {
+      res.status(200).send({ isBooked: false });
     }
     //console.log(date, propertyId);
-    res.status(200).send({ isBooked: true, bookingId: booking._id });
-  } catch (error) {}
+    const bookingId = await booking.select("_id");
+    res.status(200).send({ isBooked: true, bookingId: bookingId[0]._id });
+  } catch (error) {
+    res.status(500).send({ Error: "something went wrong." });
+  }
 });
 
 //update booking
