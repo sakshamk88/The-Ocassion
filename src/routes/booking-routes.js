@@ -109,6 +109,24 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 });
 
 //update booking
+bookingrouter.put("", auth, async (req, res) => {
+  try {
+    const udate = req.body.Booking_date.split("T");
+    const updatedData = {
+      propertyId: req.session.propertyId,
+      date: udate[0],
+      client: req.session.user.userId,
+      owner: owner.owner,
+      customerName: req.body.Customer_Name,
+      ocassion: req.body.Ocassion,
+      phoneNo: req.body.phone,
+    };
+    await Bookings.findByIdAndUpdate(req.session.user.userId, updatedData);
+    res.ststus(200).send(updatedData);
+  } catch (error) {
+    res.status(200).send({ Error: error });
+  }
+});
 
 //booking details by booking id
 bookingrouter.get("/:bId", auth, async (req, res) => {
