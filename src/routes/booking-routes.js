@@ -92,17 +92,18 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 
   try {
     console.log(date);
-    const booking = Bookings.find({
+    const booking = await Bookings.findOne({
       propertyId: propertyId,
       date: date,
     });
     console.log(booking);
     if (!booking) {
       res.status(200).send({ isBooked: false });
+      return;
     }
     //console.log(date, propertyId);
-    const bookingId = await booking.select("_id");
-    res.status(200).send({ isBooked: true, bookingId: bookingId[0]._id });
+
+    res.status(200).send({ isBooked: true, bookingId: booking._id });
   } catch (error) {
     res.status(500).send({ Error: "something went wrong." });
   }
