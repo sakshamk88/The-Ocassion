@@ -91,12 +91,11 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
   const date = [req.query.year, req.query.month, req.query.day].join("-");
 
   try {
-    console.log(date);
     const booking = await Bookings.findOne({
       propertyId: propertyId,
       date: date,
     });
-    console.log(booking);
+
     if (!booking) {
       res.status(200).send({ isBooked: false });
       return;
