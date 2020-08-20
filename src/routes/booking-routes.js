@@ -132,11 +132,13 @@ bookingrouter.put("", auth, async (req, res) => {
 bookingrouter.get("/:bId", auth, async (req, res) => {
   if (!req.params.bId) {
     res.status(404).send({ Error: "No id found." });
+    return;
   }
   try {
     const bookingDetails = await Bookings.findById(req.params.bId);
     if (!bookingDetails) {
       res.status(404).send({ Error: "No booking found with given id." });
+      return;
     }
     res.status(200).send(bookingDetails);
   } catch (error) {

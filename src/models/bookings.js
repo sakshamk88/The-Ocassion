@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
+//const validator = require("validator");
 
 const bookingSchema = new mongoose.Schema({
   propertyId: {
@@ -58,22 +58,14 @@ const bookingSchema = new mongoose.Schema({
     default: "Low",
   },
   tokenMoney: {
-    body: {
-      amount: {
-        type: Number,
-      },
-      status: {
-        type: String,
-      },
-    },
+    type: Number,
+    required: true,
+    default: 0,
   },
   status: {
     type: String,
-    validate(value) {
-      if (false) {
-        throw new Error("Status of booking not defined.");
-      }
-    },
+    required: true,
+    default: false,
   },
   addOn: [
     {
