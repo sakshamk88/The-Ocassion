@@ -25,8 +25,8 @@ bookingrouter.post("", auth, async (req, res) => {
     date: fdate[0],
   });
 
-  if (!booking) {
-    res.status(200).send({ isBooked: false });
+  if (booking) {
+    res.status(200).send({ isBooked: true });
     return;
   }
   const bookingData = {
