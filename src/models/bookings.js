@@ -67,11 +67,11 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-  addOn: [
-    {
-      type: String,
-    },
-  ],
+  addOn: {
+    type: String,
+    required: true,
+    default: "",
+  },
 });
 
 const Bookings = mongoose.model("Bookings", bookingSchema);
