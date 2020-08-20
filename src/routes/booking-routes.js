@@ -20,6 +20,15 @@ bookingrouter.post("", auth, async (req, res) => {
     res.status(500).send({ Error: "No owner Registered." });
   }
   const fdate = req.body.Booking_date.split("T");
+  const booking = await Bookings.findOne({
+    propertyId: propertyId,
+    date: fdate[0],
+  });
+
+  if (!booking) {
+    res.status(200).send({ isBooked: false });
+    return;
+  }
   const bookingData = {
     propertyId: req.session.propertyId,
     date: fdate[0],
