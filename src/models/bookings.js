@@ -69,7 +69,7 @@ const bookingSchema = new mongoose.Schema({
   },
   addOn: {
     type: String,
-    required: true,
+
     default: "",
   },
 });
