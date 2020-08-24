@@ -126,7 +126,9 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 //update booking
 bookingrouter.put("/:bId", auth, async (req, res) => {
   // try {
-  const udate = new Date(req.body.Booking_date.split("T")[0]);
+  const udate = moment(req.body.Booking_date.split("T")[0]).format(
+    "YYYY-MM-DD"
+  );
   const owner = await Property.findById(req.session.propertyId);
   const updatedData = {
     propertyId: req.session.propertyId._id,
