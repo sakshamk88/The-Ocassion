@@ -8,7 +8,7 @@ const bookingrouter = new express.Router();
 bookingrouter.post("", auth, async (req, res) => {
   if (
     !req.body.Booking_date ||
-    !req.body.Ocassion ||
+    !req.body.Occasion ||
     !req.body.phone ||
     !req.body.Customer_Name
   ) {
@@ -19,23 +19,24 @@ bookingrouter.post("", auth, async (req, res) => {
   if (!owner.owner) {
     res.status(500).send({ Error: "No owner Registered." });
   }
-  const fdate = req.body.Booking_date.split("T");
+  const fdate = new Date(req.body.Booking_date.split("T")[0]);
+  console.log(fdate);
   const booking = await Bookings.findOne({
     propertyId: req.session.propertyId,
-    date: fdate[0],
+    date: fdate,
   });
 
   if (booking) {
-    res.status(200).send({ isBooked: true });
+    res.status(200).send({ isBooked: true, bookingId: booking._id });
     return;
   }
   const bookingData = {
     propertyId: req.session.propertyId,
-    date: fdate[0],
+    date: fdate,
     client: req.session.user.userId,
     owner: owner.owner,
     customerName: req.body.Customer_Name,
-    ocassion: req.body.Ocassion,
+    ocassion: req.body.Occasion,
     phoneNo: req.body.phone,
   };
   const newBooking = new Bookings(bookingData);
@@ -44,7 +45,7 @@ bookingrouter.post("", auth, async (req, res) => {
   res.status(200).send({ bookingId: newBooking._id });
 });
 
-//get all the bookings of a particular owner(admin)
+//get all the bookings of a particular owner(admin) in a month
 bookingrouter.get("", auth, async (req, res) => {
   const session = req.session;
   if (!session.user) {
@@ -60,8 +61,10 @@ bookingrouter.get("", auth, async (req, res) => {
     const month = req.query.month;
     const year = req.query.year;
     const bookings = await allBookings.filter((booking) => {
-      const dt = booking.date.split("-");
-      return dt[1] === month && dt[0] === year;
+      return (
+        booking.date.getMonth() + 1 == month &&
+        booking.date.getFullYear() == year
+      );
     });
     res.status(200).send(bookings);
   } catch (err) {
@@ -98,11 +101,11 @@ bookingrouter.get("", auth, async (req, res) => {
 bookingrouter.get("/isbooked", auth, async (req, res) => {
   const propertyId = req.session.propertyId;
   const date = [req.query.year, req.query.month, req.query.day].join("-");
-
+  const fdate = new Date(date);
   try {
     const booking = await Bookings.findOne({
       propertyId: propertyId,
-      date: date,
+      date: fdate,
     });
 
     if (!booking) {
@@ -120,15 +123,15 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 //update booking
 bookingrouter.put("/:bId", auth, async (req, res) => {
   // try {
-  const udate = req.body.Booking_date.split("T");
+  const udate = new Date(req.body.Booking_date.split("T")[0]);
   const owner = await Property.findById(req.session.propertyId);
   const updatedData = {
     propertyId: req.session.propertyId._id,
-    date: udate[0],
+    date: udate,
     client: req.session.user.userId,
     owner: owner.owner,
     customerName: req.body.Customer_Name,
-    ocassion: req.body.Ocassion,
+    ocassion: req.body.Occasion,
     phoneNo: req.body.phone,
   };
   await Bookings.findByIdAndUpdate(req.params.bId, updatedData);

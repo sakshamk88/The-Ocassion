@@ -22,7 +22,7 @@ const bookingSchema = new mongoose.Schema({
   },
 
   date: {
-    type: String,
+    type: Date,
 
     validate(value) {
       if (false) {
