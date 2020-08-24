@@ -2,6 +2,7 @@ const express = require("express");
 const Bookings = require("../models/bookings");
 const Property = require("../models/property");
 const auth = require("../middleware/auth");
+const moment = require("moment");
 const bookingrouter = new express.Router();
 
 //make a booking
@@ -19,8 +20,10 @@ bookingrouter.post("", auth, async (req, res) => {
   if (!owner.owner) {
     res.status(500).send({ Error: "No owner Registered." });
   }
-  const fdate = new Date(req.body.Booking_date.split("T")[0]);
-  console.log(fdate);
+  const fdate = moment(req.body.Booking_date.split("T")[0]).format(
+    "YYYY-MM-DD"
+  );
+
   const booking = await Bookings.findOne({
     propertyId: req.session.propertyId,
     date: fdate,
