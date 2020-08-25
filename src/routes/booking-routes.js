@@ -4,6 +4,7 @@ const Property = require("../models/property");
 const auth = require("../middleware/auth");
 const moment = require("moment");
 const bookingrouter = new express.Router();
+const monthBookingData = require("../models/months");
 
 //make a booking
 bookingrouter.post("", auth, async (req, res) => {
@@ -69,9 +70,20 @@ bookingrouter.get("", auth, async (req, res) => {
         booking.date.getFullYear() == year
       );
     });
-    res.status(200).send(bookings);
+    await monthBookingData.forEach(async (booking) => {
+      const isBook = await bookings.filter((book) => {
+        return booking.date == book.date.getDate();
+      });
+
+      if (isBook.length) {
+        booking.isBooked = true;
+        booking.booking = isBook[0];
+      }
+      return booking;
+    });
+    res.status(200).send(monthBookingData);
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ Error: err });
   }
 });
 
@@ -127,7 +139,7 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 bookingrouter.put("/:bId", auth, async (req, res) => {
   // try {
   const udate = moment(req.body.Booking_date.split("T")[0]).format(
-    "YYYY-MM-DD"
+    "YYYY-MM-DD "
   );
   const owner = await Property.findById(req.session.propertyId);
   const updatedData = {
