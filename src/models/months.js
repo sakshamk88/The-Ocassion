@@ -31,4 +31,40 @@ const monthBookingData = [
   { weight: 50, isBooked: false, date: "31", booking: {} },
 ];
 
-module.exports = monthBookingData;
+const monthBefore = [
+  { weight: 50, isBooked: false, date: "25", booking: {} },
+  { weight: 50, isBooked: false, date: "26", booking: {} },
+  { weight: 50, isBooked: false, date: "27", booking: {} },
+  { weight: 50, isBooked: false, date: "28", booking: {} },
+  { weight: 50, isBooked: false, date: "29", booking: {} },
+  { weight: 50, isBooked: false, date: "30", booking: {} },
+  { weight: 50, isBooked: false, date: "31", booking: {} },
+];
+
+const monthAfter = [
+  { weight: 50, isBooked: false, date: "25", booking: {} },
+  { weight: 50, isBooked: false, date: "26", booking: {} },
+  { weight: 50, isBooked: false, date: "27", booking: {} },
+  { weight: 50, isBooked: false, date: "28", booking: {} },
+  { weight: 50, isBooked: false, date: "29", booking: {} },
+  { weight: 50, isBooked: false, date: "30", booking: {} },
+  { weight: 50, isBooked: false, date: "31", booking: {} },
+];
+
+const dateHandler = (month, year, monthBefore, monthAfter) => {
+  var noOfDays = new Date(year, month - 1, 0).getDate();
+  var startDaybefore = noOfDays - 7;
+
+  monthBefore.forEach((day) => {
+    day.date = (startDaybefore += 1).toString();
+  });
+
+  var startDayAfter = 0;
+  monthAfter.forEach((day) => {
+    day.date = (startDayAfter += 1).toString();
+  });
+
+  return monthBefore, monthAfter;
+};
+
+module.exports = { monthBookingData, monthBefore, monthAfter, dateHandler };
