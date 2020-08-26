@@ -187,11 +187,7 @@ bookingrouter.get("/:bId", auth, async (req, res) => {
 
 //cancel booking
 bookingrouter.delete("/booking", auth, (req, res) => {
-  const user = User.find({ _id: req.session.user.userId });
-  if (!user) {
-    res.status(404).send({ Error: "Not authenticated." });
-  }
-  if (user.role !== "admin") {
+  if (req.session.user.role !== "admin") {
     res.status(402).send({ Error: "User Not authorized." });
   }
   Bookings.delete({ _id: req.body.id });
