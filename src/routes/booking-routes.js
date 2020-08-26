@@ -72,7 +72,7 @@ bookingrouter.get("", auth, async (req, res) => {
     });
     await monthBookingData.forEach(async (booking) => {
       const isBook = await bookings.filter((book) => {
-        return booking.date == book.date.getDate();
+        return booking.date === book.date.getDate().toString();
       });
       booking.month = month;
       if (isBook.length) {
@@ -85,8 +85,12 @@ bookingrouter.get("", auth, async (req, res) => {
     });
 
     //statistics calculations
-    const statsData = { booked: bookings.length, available: month };
-    res.status(200).send(monthBookingData);
+    const noOfBookings = bookings.length;
+    const statsData = {
+      booked: noOfBookings,
+      available: new Date(year, month, 0).getDate() - noOfBookings,
+    };
+    res.status(200).send({ bookings: monthBookingData, stats: statsData });
   } catch (err) {
     res.status(500).send({ Error: err });
   }
