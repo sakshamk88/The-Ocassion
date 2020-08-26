@@ -74,13 +74,18 @@ bookingrouter.get("", auth, async (req, res) => {
       const isBook = await bookings.filter((book) => {
         return booking.date == book.date.getDate();
       });
-
+      booking.month = month;
       if (isBook.length) {
         booking.isBooked = true;
+
         booking.booking = isBook[0];
       }
+
       return booking;
     });
+
+    //statistics calculations
+    const statsData = { booked: bookings.length, available: month };
     res.status(200).send(monthBookingData);
   } catch (err) {
     res.status(500).send({ Error: err });
