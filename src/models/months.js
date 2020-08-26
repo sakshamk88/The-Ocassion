@@ -51,20 +51,18 @@ const monthAfter = [
   { weight: 50, isBooked: false, date: "31", booking: {} },
 ];
 
-const dateHandler = (month, year, monthBefore, monthAfter) => {
+const dateHandler = (month, year, monthBeforeData, monthAfterData) => {
   var noOfDays = new Date(year, month - 1, 0).getDate();
   var startDaybefore = noOfDays - 7;
 
-  monthBefore.forEach((day) => {
+  monthBeforeData.forEach((day) => {
     day.date = (startDaybefore += 1).toString();
   });
 
   var startDayAfter = 0;
-  monthAfter.forEach((day) => {
+  monthAfterData.forEach((day) => {
     day.date = (startDayAfter += 1).toString();
   });
-
-  return monthBefore, monthAfter;
 };
 
 module.exports = { monthBookingData, monthBefore, monthAfter, dateHandler };

@@ -65,92 +65,94 @@ bookingrouter.get("", auth, async (req, res) => {
   }
 
   //const allbookings = await Bookings.find().gt("date", new Date());
-  // try {
-  const allBookings = await Bookings.find({ owner: session.user.userId });
-  const month = req.query.month;
-  const year = req.query.year;
-  const bookings = await allBookings.filter((booking) => {
-    return (
-      (booking.date.getMonth() + 1).toString() === month &&
-      booking.date.getFullYear().toString() === year
-    );
-  });
-  await monthBookingData.forEach(async (booking) => {
-    const isBook = await bookings.filter((book) => {
-      return booking.date === book.date.getDate().toString();
+  try {
+    const allBookings = await Bookings.find({ owner: session.user.userId });
+    const month = req.query.month;
+    const year = req.query.year;
+    const bookings = await allBookings.filter((booking) => {
+      return (
+        (booking.date.getMonth() + 1).toString() === month &&
+        booking.date.getFullYear().toString() === year
+      );
     });
-    booking.month = month;
-    if (isBook.length) {
-      booking.isBooked = true;
+    await monthBookingData.forEach(async (booking) => {
+      const isBook = await bookings.filter((book) => {
+        return booking.date === book.date.getDate().toString();
+      });
+      booking.month = month;
+      if (isBook.length) {
+        booking.isBooked = true;
 
-      booking.booking = isBook[0];
-    }
+        booking.booking = isBook[0];
+      }
 
-    return booking;
-  });
-  //7 days before and after current month
-  dateHandler(month, year, monthBefore, monthAfter);
-
-  //calculating before month booking
-  var monBefore = month;
-  var beforeMonthBooking = await allBookings.filter((booking) => {
-    return (
-      (booking.date.getMonth() + 1).toString() === (monBefore - 1).toString() &&
-      booking.date.getFullYear().toString() === year
-    );
-  });
-  await monthBefore.forEach(async (booking) => {
-    const isBook = await beforeMonthBooking.filter((book) => {
-      return booking.date === book.date.getDate().toString();
+      return booking;
     });
-    booking.month = monBefore - 1;
-    if (isBook.length) {
-      booking.isBooked = true;
+    //7 days before and after current month
+    dateHandler(month, year, monthBefore, monthAfter);
 
-      booking.booking = isBook[0];
-    }
-
-    return booking;
-  });
-
-  //calculating after month booking
-  var monAfter = parseInt(month);
-
-  var afterMonthBooking = await allBookings.filter((booking) => {
-    return (
-      (booking.date.getMonth() + 1).toString() === (monAfter + 1).toString() &&
-      booking.date.getFullYear().toString() === year
-    );
-  });
-  await monthAfter.forEach(async (booking) => {
-    const isBook = await afterMonthBooking.filter((book) => {
-      return booking.date === book.date.getDate().toString();
+    //calculating before month booking
+    var monBefore = month;
+    var beforeMonthBooking = await allBookings.filter((booking) => {
+      return (
+        (booking.date.getMonth() + 1).toString() ===
+          (monBefore - 1).toString() &&
+        booking.date.getFullYear().toString() === year
+      );
     });
-    booking.month = monAfter + 1;
-    if (isBook.length) {
-      booking.isBooked = true;
+    await monthBefore.forEach(async (booking) => {
+      const isBook = await beforeMonthBooking.filter((book) => {
+        return booking.date === book.date.getDate().toString();
+      });
+      booking.month = monBefore == 1 ? "12" : (monBefore + 1).toString();
+      if (isBook.length) {
+        booking.isBooked = true;
 
-      booking.booking = isBook[0];
-    }
+        booking.booking = isBook[0];
+      }
 
-    return booking;
-  });
-  //statistics calculations
-  const noOfBookings = bookings.length;
-  const statsData = {
-    booked: noOfBookings,
-    available: new Date(year, month, 0).getDate() - noOfBookings,
-  };
+      return booking;
+    });
 
-  res.status(200).send({
-    bookings: monthBookingData,
-    stats: statsData,
-    monthBefore: monthBefore,
-    monthAfter: monthAfter,
-  });
-  // } catch (err) {
-  //   res.status(500).send({ Error: err });
-  // }
+    //calculating after month booking
+    var monAfter = parseInt(month);
+
+    var afterMonthBooking = await allBookings.filter((booking) => {
+      return (
+        (booking.date.getMonth() + 1).toString() ===
+          (monAfter == 12 ? 1 : monAfter + 1).toString() &&
+        booking.date.getFullYear().toString() === year
+      );
+    });
+    await monthAfter.forEach(async (booking) => {
+      const isBook = await afterMonthBooking.filter((book) => {
+        return booking.date === book.date.getDate().toString();
+      });
+      booking.month = monAfter == 12 ? "1" : (monAfter + 1).toString();
+      if (isBook.length) {
+        booking.isBooked = true;
+
+        booking.booking = isBook[0];
+      }
+
+      return booking;
+    });
+    //statistics calculations
+    const noOfBookings = bookings.length;
+    const statsData = {
+      booked: noOfBookings,
+      available: new Date(year, month, 0).getDate() - noOfBookings,
+    };
+
+    res.status(200).send({
+      bookings: monthBookingData,
+      stats: statsData,
+      monthBefore: monthBefore,
+      monthAfter: monthAfter,
+    });
+  } catch (err) {
+    res.status(500).send({ Error: err });
+  }
 });
 
 // get client specific bookings( only those for that specific client )
