@@ -47,6 +47,7 @@ bookingrouter.post("", auth, async (req, res) => {
     customerName: req.body.Customer_Name,
     ocassion: req.body.Occasion,
     phoneNo: req.body.phone,
+    status: req.body.status,
   };
   const newBooking = new Bookings(bookingData);
 
@@ -71,13 +72,18 @@ bookingrouter.get("", auth, async (req, res) => {
     const year = req.query.year;
     const bookings = await allBookings.filter((booking) => {
       return (
-        (booking.date.getMonth() + 1).toString() === month &&
-        booking.date.getFullYear().toString() === year
+        (booking.date.getMonth() + 1).toString() == month &&
+        booking.date.getFullYear().toString() == year
       );
     });
     await monthBookingData.forEach(async (booking) => {
       const isBook = await bookings.filter((book) => {
-        return booking.date === book.date.getDate().toString();
+        // console.log(
+        //   typeof booking.date +
+        //     " ----- " +
+        //     typeof book.date.getDate().toString()
+        // );
+        return booking.date == book.date.getDate().toString();
       });
       booking.month = month;
       if (isBook.length) {
@@ -88,6 +94,7 @@ bookingrouter.get("", auth, async (req, res) => {
 
       return booking;
     });
+
     //7 days before and after current month
     dateHandler(month, year, monthBefore, monthAfter);
 
@@ -104,7 +111,8 @@ bookingrouter.get("", auth, async (req, res) => {
       const isBook = await beforeMonthBooking.filter((book) => {
         return booking.date === book.date.getDate().toString();
       });
-      booking.month = monBefore == 1 ? "12" : (monBefore + 1).toString();
+      booking.month =
+        monBefore == 1 ? "12" : (parseInt(monBefore) - 1).toString();
       if (isBook.length) {
         booking.isBooked = true;
 
@@ -139,9 +147,13 @@ bookingrouter.get("", auth, async (req, res) => {
     });
     //statistics calculations
     const noOfBookings = bookings.length;
+    const cancelledBookings = allBookings.filter((booking) => {
+      return booking.status === "Cancelled";
+    });
     const statsData = {
       booked: noOfBookings,
       available: new Date(year, month, 0).getDate() - noOfBookings,
+      cancelled: cancelledBookings.length,
     };
 
     res.status(200).send({
@@ -242,6 +254,15 @@ bookingrouter.get("/:bId", auth, async (req, res) => {
   } catch (error) {
     res.status(500).send({ Error: "No booking found with given id." });
   }
+});
+
+//weightage api
+bookingrouter.post("/weight", auth, (req, res) => {
+  if (req.session.user.role !== "admin") {
+    res.status(401).send("User is not Authorised.");
+  }
+  const weightData = {};
+  res.status(200).Send("Api successful.");
 });
 
 //cancel booking

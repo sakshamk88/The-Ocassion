@@ -65,7 +65,7 @@ const bookingSchema = new mongoose.Schema({
   status: {
     type: String,
     required: true,
-    default: false,
+    default: "Booked",
   },
   addOn: {
     type: String,

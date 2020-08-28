@@ -20,6 +20,7 @@ const monthBookingData = [
   { weight: 50, isBooked: false, date: "19", booking: {} },
   { weight: 50, isBooked: false, date: "20", booking: {} },
   { weight: 50, isBooked: false, date: "21", booking: {} },
+  { weight: 50, isBooked: false, date: "22", booking: {} },
   { weight: 50, isBooked: false, date: "23", booking: {} },
   { weight: 50, isBooked: false, date: "24", booking: {} },
   { weight: 50, isBooked: false, date: "25", booking: {} },
