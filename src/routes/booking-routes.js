@@ -256,15 +256,6 @@ bookingrouter.get("/:bId", auth, async (req, res) => {
   }
 });
 
-//weightage api
-bookingrouter.post("/weight", auth, (req, res) => {
-  if (req.session.user.role !== "admin") {
-    res.status(401).send("User is not Authorised.");
-  }
-  const weightData = {};
-  res.status(200).Send("Api successful.");
-});
-
 //cancel booking
 bookingrouter.delete("/booking", auth, (req, res) => {
   if (req.session.user.role !== "admin") {

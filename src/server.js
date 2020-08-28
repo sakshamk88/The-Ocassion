@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const cors = require("cors");
 const bookingrouter = require("./routes/booking-routes");
+const weightRouter = require("./routes/weight-router");
 require("./db/mongoose");
 
 const publicDirectoryPath = path.join(__dirname, "../public");
@@ -69,6 +70,7 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
 apiRouter.use("/bookings", bookingrouter);
 apiRouter.use("/property", propertyRouter);
+apiRouter.use("/weight", weightRouter);
 
 app.use("/api", apiRouter);
 
