@@ -4,12 +4,6 @@ const Property = require("../models/property");
 const auth = require("../middleware/auth");
 const moment = require("moment");
 const bookingrouter = new express.Router();
-const {
-  monthBookingData,
-  monthBefore,
-  monthAfter,
-  dateHandler,
-} = require("../models/months");
 
 //make a booking
 bookingrouter.post("", auth, async (req, res) => {
@@ -58,6 +52,75 @@ bookingrouter.post("", auth, async (req, res) => {
 //get all the bookings of a particular owner(admin) in a month
 bookingrouter.get("", auth, async (req, res) => {
   const session = req.session;
+  //-------VARIABLE DECLERATION----------
+  const monthBookingData = [
+    { weight: 50, isBooked: false, date: "1", booking: {} },
+    { weight: 50, isBooked: false, date: "2", booking: {} },
+    { weight: 50, isBooked: false, date: "3", booking: {} },
+    { weight: 50, isBooked: false, date: "4", booking: {} },
+    { weight: 50, isBooked: false, date: "5", booking: {} },
+    { weight: 50, isBooked: false, date: "6", booking: {} },
+    { weight: 50, isBooked: false, date: "7", booking: {} },
+    { weight: 50, isBooked: false, date: "8", booking: {} },
+    { weight: 50, isBooked: false, date: "9", booking: {} },
+    { weight: 50, isBooked: false, date: "10", booking: {} },
+    { weight: 50, isBooked: false, date: "11", booking: {} },
+    { weight: 50, isBooked: false, date: "12", booking: {} },
+    { weight: 50, isBooked: false, date: "13", booking: {} },
+    { weight: 50, isBooked: false, date: "14", booking: {} },
+    { weight: 50, isBooked: false, date: "15", booking: {} },
+    { weight: 50, isBooked: false, date: "16", booking: {} },
+    { weight: 50, isBooked: false, date: "17", booking: {} },
+    { weight: 50, isBooked: false, date: "18", booking: {} },
+    { weight: 50, isBooked: false, date: "19", booking: {} },
+    { weight: 50, isBooked: false, date: "20", booking: {} },
+    { weight: 50, isBooked: false, date: "21", booking: {} },
+    { weight: 50, isBooked: false, date: "22", booking: {} },
+    { weight: 50, isBooked: false, date: "23", booking: {} },
+    { weight: 50, isBooked: false, date: "24", booking: {} },
+    { weight: 50, isBooked: false, date: "25", booking: {} },
+    { weight: 50, isBooked: false, date: "26", booking: {} },
+    { weight: 50, isBooked: false, date: "27", booking: {} },
+    { weight: 50, isBooked: false, date: "28", booking: {} },
+    { weight: 50, isBooked: false, date: "29", booking: {} },
+    { weight: 50, isBooked: false, date: "30", booking: {} },
+    { weight: 50, isBooked: false, date: "31", booking: {} },
+  ];
+
+  const monthBefore = [
+    { weight: 50, isBooked: false, date: "25", booking: {} },
+    { weight: 50, isBooked: false, date: "26", booking: {} },
+    { weight: 50, isBooked: false, date: "27", booking: {} },
+    { weight: 50, isBooked: false, date: "28", booking: {} },
+    { weight: 50, isBooked: false, date: "29", booking: {} },
+    { weight: 50, isBooked: false, date: "30", booking: {} },
+    { weight: 50, isBooked: false, date: "31", booking: {} },
+  ];
+
+  const monthAfter = [
+    { weight: 50, isBooked: false, date: "25", booking: {} },
+    { weight: 50, isBooked: false, date: "26", booking: {} },
+    { weight: 50, isBooked: false, date: "27", booking: {} },
+    { weight: 50, isBooked: false, date: "28", booking: {} },
+    { weight: 50, isBooked: false, date: "29", booking: {} },
+    { weight: 50, isBooked: false, date: "30", booking: {} },
+    { weight: 50, isBooked: false, date: "31", booking: {} },
+  ];
+
+  const dateHandler = (month, year, monthBeforeData, monthAfterData) => {
+    var noOfDays = new Date(year, month - 1, 0).getDate();
+    var startDaybefore = noOfDays - 7;
+
+    monthBeforeData.forEach((day) => {
+      day.date = (startDaybefore += 1).toString();
+    });
+
+    var startDayAfter = 0;
+    monthAfterData.forEach((day) => {
+      day.date = (startDayAfter += 1).toString();
+    });
+  };
+  //---VARIABLE DECLARARTION ENDS-----
   if (!session.user) {
     res.status(401).send("You are not authenticated.");
   }
