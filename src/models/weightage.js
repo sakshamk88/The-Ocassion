@@ -1,16 +1,24 @@
 const mongoose = require("mongoose");
 
 const weightageSchema = mongoose.Schema({
-  range: [],
-  date: {
-    type: Date,
-  },
-  percent: {
-    type: Number,
-    required: true,
-  },
-  type: {
-    type: String,
+  dates: [
+    {
+      date: {
+        type: Date,
+        required: true,
+      },
+      weight: {
+        type: Number,
+        required: true,
+      },
+      status: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
 });

@@ -19,31 +19,65 @@ function getDates(startDate, stopDate) {
   return dateArray;
 }
 
-weightRouter.post("", auth, async (req, res) => {
+weightRouter.put("", auth, async (req, res) => {
   if (req.session.user.role !== "admin") {
     res.status(401).send("User is not Authorised.");
   }
-  try {
+
+  if (req.body.rangepicker) {
+    const stat = req.body.type;
+    const weight = req.body.percent;
+
     const start = req.body.rangepicker[0];
     const end = req.body.rangepicker[1];
+
     const range = getDates(start, end);
 
-    const weightData = {
-      range: range,
-      date: req.body.datepicker ? req.body.datepicker : undefined,
-      type: req.body.type,
-      percent: req.body.percent,
-    };
-    const weight = new weightage(weightData);
+    const prevData = await weightage.findOne({
+      userId: req.session.user.userId,
+    });
 
-    await weight.save();
+    range.forEach((date) => {
+      prevData.dates.push({
+        date: moment(date).format("YYYY-MM-DD"),
+        type: stat,
+        weight: weight,
+      });
+    });
+    prevData.dates.splice(0, 1);
+    await weightage.findOneAndUpdate(
+      { userId: req.session.user.userId },
+      { dates: prevData.dates }
+    );
 
     res
       .status(200)
-      .send({ message: "Weight saved successfully", id: weight._id });
-  } catch (error) {
-    res.status(500).send({ Error: error });
+      .send({ message: "Weight saved successfully", id: prevData._id });
+  } else {
+    const sdate = req.body.datepicker;
+
+    const prevData = await weightage.findOne({
+      userId: req.session.user.userId,
+    });
+
+    prevData.dates.push({
+      date: moment(sdate).format("YYYY-MM-DD"),
+      type: stat,
+      weight: weight,
+    });
+    prevData.dates.splice(0, 1);
+    await weightage.findOneAndUpdate(
+      { userId: req.session.user.userId },
+      { dates: prevData.dates }
+    );
+    res
+      .status(200)
+      .send({ message: "Weight saved successfully", id: prevData._id });
   }
+
+  // } catch (error) {
+  //   res.status(500).send({ Error: error });
+  // }
 });
 
 module.exports = weightRouter;

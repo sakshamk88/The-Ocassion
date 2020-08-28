@@ -1,6 +1,7 @@
 const express = require("express");
 const Bookings = require("../models/bookings");
 const Property = require("../models/property");
+const Weightage = require("../models/weightage");
 const auth = require("../middleware/auth");
 const moment = require("moment");
 const bookingrouter = new express.Router();
@@ -131,6 +132,8 @@ bookingrouter.get("", auth, async (req, res) => {
   //const allbookings = await Bookings.find().gt("date", new Date());
   try {
     const allBookings = await Bookings.find({ owner: session.user.userId });
+    const weights = await Weightage.findOne({ userId: session.user.userId });
+
     const month = req.query.month;
     const year = req.query.year;
     const bookings = await allBookings.filter((booking) => {
@@ -141,11 +144,6 @@ bookingrouter.get("", auth, async (req, res) => {
     });
     await monthBookingData.forEach(async (booking) => {
       const isBook = await bookings.filter((book) => {
-        // console.log(
-        //   typeof booking.date +
-        //     " ----- " +
-        //     typeof book.date.getDate().toString()
-        // );
         return booking.date == book.date.getDate().toString();
       });
       booking.month = month;
@@ -156,6 +154,18 @@ bookingrouter.get("", auth, async (req, res) => {
       }
 
       return booking;
+    });
+
+    await monthBookingData.forEach(async (booking) => {
+      await weights.dates.filter((obj) => {
+        if (
+          obj.date.getDate() == booking.date &&
+          obj.date.getMonth() + 1 == month
+        ) {
+          booking.weight = obj.weight;
+        }
+        return true;
+      });
     });
 
     //7 days before and after current month
@@ -185,6 +195,18 @@ bookingrouter.get("", auth, async (req, res) => {
       return booking;
     });
 
+    await monthBefore.forEach(async (booking) => {
+      const isMatch = await weights.dates.filter((obj) => {
+        if (
+          obj.date.getDate() == booking.date &&
+          obj.date.getMonth() + 1 == month
+        ) {
+          booking.weight = obj.weight;
+        }
+        return true;
+      });
+    });
+
     //calculating after month booking
     var monAfter = parseInt(month);
 
@@ -208,6 +230,19 @@ bookingrouter.get("", auth, async (req, res) => {
 
       return booking;
     });
+
+    await monthAfter.forEach(async (booking) => {
+      const isMatch = await weights.dates.filter((obj) => {
+        if (
+          obj.date.getDate() == booking.date &&
+          obj.date.getMonth() + 1 == month
+        ) {
+          booking.weight = obj.weight;
+        }
+        return true;
+      });
+    });
+
     //statistics calculations
     const noOfBookings = bookings.length;
     const cancelledBookings = allBookings.filter((booking) => {
