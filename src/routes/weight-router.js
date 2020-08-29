@@ -19,7 +19,7 @@ function getDates(startDate, stopDate) {
   return dateArray;
 }
 
-weightRouter.post("", auth, async (req, res) => {
+weightRouter.put("", auth, async (req, res) => {
   if (req.session.user.role !== "admin") {
     res.status(401).send("User is not Authorised.");
   }
