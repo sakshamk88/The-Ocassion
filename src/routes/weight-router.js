@@ -19,7 +19,7 @@ function getDates(startDate, stopDate) {
   return dateArray;
 }
 
-weightRouter.put("", auth, async (req, res) => {
+weightRouter.post("", auth, async (req, res) => {
   if (req.session.user.role !== "admin") {
     res.status(401).send("User is not Authorised.");
   }
@@ -44,7 +44,7 @@ weightRouter.put("", auth, async (req, res) => {
         weight: weight,
       });
     });
-    prevData.dates.splice(0, 1);
+    //prevData.dates.splice(0, 1);
     await weightage.findOneAndUpdate(
       { userId: req.session.user.userId },
       { dates: prevData.dates }
@@ -54,6 +54,8 @@ weightRouter.put("", auth, async (req, res) => {
       .status(200)
       .send({ message: "Weight saved successfully", id: prevData._id });
   } else {
+    const stat = req.body.type;
+    const weight = req.body.percent;
     const sdate = req.body.datepicker;
 
     const prevData = await weightage.findOne({
@@ -65,7 +67,7 @@ weightRouter.put("", auth, async (req, res) => {
       type: stat,
       weight: weight,
     });
-    prevData.dates.splice(0, 1);
+    //prevData.dates.splice(0, 1);
     await weightage.findOneAndUpdate(
       { userId: req.session.user.userId },
       { dates: prevData.dates }
