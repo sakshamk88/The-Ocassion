@@ -294,7 +294,8 @@ bookingrouter.get("", auth, async (req, res) => {
 bookingrouter.get("/isbooked", auth, async (req, res) => {
   const propertyId = req.session.propertyId;
   const date = [req.query.year, req.query.month, req.query.day].join("-");
-  const fdate = new Date(date);
+  const fdate = moment(date).format("YYYY-MM-DD");
+
   try {
     const booking = await Bookings.findOne({
       propertyId: propertyId,
@@ -315,25 +316,26 @@ bookingrouter.get("/isbooked", auth, async (req, res) => {
 
 //update booking
 bookingrouter.put("/:bId", auth, async (req, res) => {
-  // try {
-  const udate = moment(req.body.Booking_date.split("T")[0]).format(
-    "YYYY-MM-DD "
-  );
-  const owner = await Property.findById(req.session.propertyId);
-  const updatedData = {
-    propertyId: req.session.propertyId._id,
-    date: udate,
-    client: req.session.user.userId,
-    owner: owner.owner,
-    customerName: req.body.Customer_Name,
-    ocassion: req.body.Occasion,
-    phoneNo: req.body.phone,
-  };
-  await Bookings.findByIdAndUpdate(req.params.bId, updatedData);
-  res.status(200).send(updatedData);
-  // } catch (error) {
-  //   res.status(500).send({ Error: error });
-  //}
+  try {
+    const udate = moment(req.body.Booking_date.split("T")[0]).format(
+      "YYYY-MM-DD"
+    );
+
+    const owner = await Property.findById(req.session.propertyId);
+    const updatedData = {
+      propertyId: req.session.propertyId._id,
+      date: udate,
+      client: req.session.user.userId,
+      owner: owner.owner,
+      customerName: req.body.Customer_Name,
+      ocassion: req.body.Occasion,
+      phoneNo: req.body.phone,
+    };
+    await Bookings.findByIdAndUpdate(req.params.bId, updatedData);
+    res.status(200).send(updatedData);
+  } catch (error) {
+    res.status(500).send({ Error: error });
+  }
 });
 
 //booking details by booking id
