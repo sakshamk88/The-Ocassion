@@ -48,7 +48,18 @@ const propertySchema = new mongoose.Schema(
       required: true,
       ref: "User",
     },
+    accessTo: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
+        role: {
+          type: String,
+        },
+      },
+    ],
   },
+
   {
     timestamps: true,
   }

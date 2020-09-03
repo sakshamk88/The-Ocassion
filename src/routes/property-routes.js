@@ -3,7 +3,7 @@ const propertyRouter = new express.Router();
 const Property = require("../models/property");
 const auth = require("../middleware/auth");
 
-propertyRouter.post("", auth, async (req, res) => {
+propertyRouter.post("", async (req, res) => {
   req.body.owner = req.session.user.userId;
   const property = new Property({
     ...req.body,

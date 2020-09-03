@@ -43,6 +43,9 @@ bookingrouter.post("", auth, async (req, res) => {
     ocassion: req.body.Occasion,
     phoneNo: req.body.phone,
     status: req.body.status,
+    comments: req.body.Comments,
+    paid: req.body.paid,
+    due: req.body.Due,
   };
   const newBooking = new Bookings(bookingData);
 
@@ -330,6 +333,9 @@ bookingrouter.put("/:bId", auth, async (req, res) => {
       customerName: req.body.Customer_Name,
       ocassion: req.body.Occasion,
       phoneNo: req.body.phone,
+      comments: req.body.comments,
+      paid: req.body.paid,
+      due: req.body.paid,
     };
     await Bookings.findByIdAndUpdate(req.params.bId, updatedData);
     res.status(200).send(updatedData);

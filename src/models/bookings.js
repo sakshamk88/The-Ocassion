@@ -57,20 +57,24 @@ const bookingSchema = new mongoose.Schema({
     required: true,
     default: "Low",
   },
-  tokenMoney: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
+
   status: {
     type: String,
     required: true,
     default: "Booked",
   },
-  addOn: {
+  comments: {
     type: String,
-
+    required: true,
     default: "",
+  },
+  paid: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  due: {
+    type: Number,
   },
 });
 
