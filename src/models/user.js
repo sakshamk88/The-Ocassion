@@ -35,7 +35,6 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: true,
     },
     phoneNo: {
       type: Number,
@@ -44,12 +43,11 @@ const userSchema = new mongoose.Schema(
     },
     aadhaarNo: {
       type: String,
-      required: true,
+
       minlength: 16,
     },
     firmName: {
       type: String,
-      required: true,
     },
     staffNo: {
       type: Number,
