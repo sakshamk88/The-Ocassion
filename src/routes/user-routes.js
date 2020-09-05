@@ -60,14 +60,16 @@ router.get("", auth, async (req, res) => {
   property.accessTo.forEach(async (user) => {
     authUsers.push({ user: await User.findById(user.userId), isDelete: true });
   });
-  if (!authUsers.length) {
-    res.status(404).send({ Error: "No user found." });
-    return;
-  }
+
   authUsers.push({
     user: await User.findById(req.session.user.userId),
     isDelete: false,
   });
+
+  if (!authUsers.length) {
+    res.status(404).send({ Error: "No user found." });
+    return;
+  }
 
   res.status(200).send(authUsers);
 });
