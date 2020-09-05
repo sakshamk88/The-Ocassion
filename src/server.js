@@ -65,7 +65,7 @@ app.use(
 );
 
 const apiRouter = express.Router();
-// app.set("static", path.join(__dirname, "./public"));
+app.set("static", path.join(__dirname, "./public/build"));
 apiRouter.use("/users", userRouter);
 apiRouter.use("/session", sessionRouter);
 apiRouter.use("/bookings", bookingrouter);
