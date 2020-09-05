@@ -73,18 +73,17 @@ router.get("", auth, async (req, res) => {
   const finalUsers = [];
   authUsers.forEach((obj) => {
     finalUsers.push({
-      user: {
-        website: obj.user.website,
+      website: obj.user.website,
 
-        name: obj.user.name,
-        email: obj.user.email,
-        phoneNo: obj.user.phoneNo,
+      name: obj.user.name,
+      email: obj.user.email,
+      phoneNo: obj.user.phoneNo,
 
-        address: obj.user.address,
+      address: obj.user.address,
 
-        firmName: obj.user.firmName,
-        role: obj.user.role,
-      },
+      firmName: obj.user.firmName,
+      role: obj.user.role,
+
       isDelete: obj.isDelete,
     });
   });
