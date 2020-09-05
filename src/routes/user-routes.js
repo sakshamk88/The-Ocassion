@@ -64,6 +64,7 @@ router.get("", auth, async (req, res) => {
     res.status(404).send({ Error: "No user found." });
     return;
   }
+  authUsers.push(await User.findById(req.session.user.userId));
 
   res.status(200).send(authUsers);
 });
