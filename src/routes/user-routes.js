@@ -70,8 +70,26 @@ router.get("", auth, async (req, res) => {
     res.status(404).send({ Error: "No user found." });
     return;
   }
+  const finalUsers = [];
+  authUsers.forEach((obj) => {
+    finalUsers.push({
+      user: {
+        website: obj.user.website,
 
-  res.status(200).send(authUsers);
+        name: obj.user.name,
+        email: obj.user.email,
+        phoneNo: obj.user.phoneNo,
+
+        address: obj.user.address,
+
+        firmName: obj.user.firmName,
+        role: obj.user.role,
+      },
+      isDelete: obj.isDelete,
+    });
+  });
+
+  res.status(200).send(finalUsers);
 });
 
 //to remove a user from access rights of property
