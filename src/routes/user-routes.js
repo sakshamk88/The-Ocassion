@@ -3,6 +3,7 @@ const router = new express.Router();
 const User = require("../models/user");
 const Property = require("../models/property");
 const auth = require("../middleware/auth");
+const Weightage = require("../models/weightage")
 const {
   loginChecker,
   propChecker,
@@ -26,6 +27,13 @@ router.post("", async (req, res) => {
     const user = new User(req.body);
     const sessionUser = sessionizeUser(user);
     await user.save();
+
+    const newId = new Weightage({
+      dates: [],
+      userId: user._id,
+    });
+
+    await newId.save();
 
     //sendWelcomeMail(user.email, user.name);
     //const token = await user.generateAuthToken();
@@ -84,8 +92,39 @@ router.put("/:uId", auth, (req, res) => {
     res.status(401).send({ Error: "User not Authorised" });
     return;
   }
+try{
+  const updatedData = req.body;
 
-  const updatedData = [];
+  await User.findByIdAndUpdate(req.params.uId, updatedData);
+  res.status(200).send("Used Data Updated Successfully.")
+}catch(error){
+  res.status(500).send({Error: error});
+}
+});
+//adding a user by admin
+router.post("adduser", async (req, res) => {
+  try {
+    const result = userChecker(req.body);
+    if (result.errors.length !== 0) {
+      //console.log(result);
+      res.status(401).send({
+        Errors: result.errors.map((error) => {
+          return `${error.argument} is required!`;
+        }),
+      });
+      return;
+    }
+    const user = new User(req.body);
+    await user.save();
+
+    //sendWelcomeMail(user.email, user.name);
+    //const token = await user.generateAuthToken();
+    req.session.user = sessionUser;
+    //console.log(req.session.user);
+    res.status(201).send(sessionUser);
+  } catch (e) {
+    res.status(500).send(JSON.stringify(e));
+  }
 });
 
 //route to logout of all devices

@@ -20,6 +20,7 @@ function getDates(startDate, stopDate) {
 }
 
 weightRouter.put("", auth, async (req, res) => {
+  // try {
   if (req.session.user.role !== "admin") {
     res.status(401).send("User is not Authorised.");
   }
@@ -28,8 +29,8 @@ weightRouter.put("", auth, async (req, res) => {
     const stat = req.body.type;
     const weight = req.body.percent;
 
-    const start = req.body.rangepicker[0];
-    const end = req.body.rangepicker[1];
+    const start = req.body.rangepicker[0].split("T")[0];
+    const end = req.body.rangepicker[1].split("T")[0];
 
     const range = getDates(start, end);
 
@@ -37,17 +38,34 @@ weightRouter.put("", auth, async (req, res) => {
       userId: req.session.user.userId,
     });
 
+    var newData = prevData.dates;
+    if (!prevData.dates.length) {
+      range.forEach((date) => {
+        newData.push({
+          date: moment(date).format("YYYY-MM-DD"),
+          type: stat,
+          weight: weight,
+        });
+      });
+    }
     range.forEach((date) => {
-      prevData.dates.push({
-        date: moment(date).format("YYYY-MM-DD"),
-        type: stat,
-        weight: weight,
+      prevData.dates.forEach((dateobj) => {
+        if (date === dateobj.date.toString().split("T")[0]) {
+          dateobj.type = stat;
+          dateobj.weight = weight;
+        } else {
+          newData.push({
+            date: moment(date).format("YYYY-MM-DD"),
+            type: stat,
+            weight: weight,
+          });
+        }
       });
     });
-    //prevData.dates.splice(0, 1);
+
     await weightage.findOneAndUpdate(
       { userId: req.session.user.userId },
-      { dates: prevData.dates }
+      { dates: newData }
     );
 
     res
@@ -56,18 +74,31 @@ weightRouter.put("", auth, async (req, res) => {
   } else {
     const stat = req.body.type;
     const weight = req.body.percent;
-    const sdate = req.body.datepicker;
+    const sdate = req.body.datepicker.split("T")[0];
 
     const prevData = await weightage.findOne({
       userId: req.session.user.userId,
     });
 
-    prevData.dates.push({
-      date: moment(sdate).format("YYYY-MM-DD"),
-      type: stat,
-      weight: weight,
+    const isSame = await prevData.dates.filter((date) => {
+      return date.date == sdate;
     });
-    //prevData.dates.splice(0, 1);
+
+    if (!isSame.length) {
+      prevData.dates.push({
+        date: moment(sdate).format("YYYY-MM-DD"),
+        type: stat,
+        weight: weight,
+      });
+    } else {
+      prevData.dates.forEach((date) => {
+        if (date.date == sdate) {
+          date.type = stat;
+          date.weight = weight;
+        }
+      });
+    }
+
     await weightage.findOneAndUpdate(
       { userId: req.session.user.userId },
       { dates: prevData.dates }
