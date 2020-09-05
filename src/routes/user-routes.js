@@ -3,7 +3,7 @@ const router = new express.Router();
 const User = require("../models/user");
 const Property = require("../models/property");
 const auth = require("../middleware/auth");
-const Weightage = require("../models/weightage")
+const Weightage = require("../models/weightage");
 const {
   loginChecker,
   propChecker,
@@ -87,19 +87,19 @@ router.delete("/:uId", auth, async (req, res) => {
 });
 
 //to update a user details by admin
-router.put("/:uId", auth, (req, res) => {
+router.put("/:uId", auth, async (req, res) => {
   if (req.session.user.role !== "admin") {
     res.status(401).send({ Error: "User not Authorised" });
     return;
   }
-try{
-  const updatedData = req.body;
+  try {
+    const updatedData = req.body;
 
-  await User.findByIdAndUpdate(req.params.uId, updatedData);
-  res.status(200).send("Used Data Updated Successfully.")
-}catch(error){
-  res.status(500).send({Error: error});
-}
+    await User.findByIdAndUpdate(req.params.uId, updatedData);
+    res.status(200).send("Used Data Updated Successfully.");
+  } catch (error) {
+    res.status(500).send({ Error: error });
+  }
 });
 //adding a user by admin
 router.post("adduser", async (req, res) => {
