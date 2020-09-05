@@ -58,13 +58,16 @@ router.get("", auth, async (req, res) => {
 
   const authUsers = [];
   property.accessTo.forEach(async (user) => {
-    authUsers.push(await User.findById(user.userId));
+    authUsers.push({ user: await User.findById(user.userId), isDelete: true });
   });
   if (!authUsers.length) {
     res.status(404).send({ Error: "No user found." });
     return;
   }
-  authUsers.push(await User.findById(req.session.user.userId));
+  authUsers.push({
+    user: await User.findById(req.session.user.userId),
+    isDelete: false,
+  });
 
   res.status(200).send(authUsers);
 });
