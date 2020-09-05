@@ -50,16 +50,19 @@ router.post("", async (req, res) => {
 router.get("", auth, async (req, res) => {
   if (req.session.user.role !== "admin") {
     res.status(401).send({ Error: "User not authorised." });
+    return;
   }
   const property = await Property.findById(req.session.propertyId);
 
   //getting all users other than admin
 
-  const authUsers = property.accessTo.forEach(async (user) => {
-    return await User.findById(user.userId);
+  const authUsers = [];
+  property.accessTo.forEach(async (user) => {
+    authUsers.push(await User.findById(user.userId));
   });
   if (!authUsers.length) {
-    res.status(204).send({ Error: "No user found." });
+    res.status(404).send({ Error: "No user found." });
+    return;
   }
 
   res.status(200).send(authUsers);
