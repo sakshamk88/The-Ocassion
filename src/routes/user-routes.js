@@ -120,6 +120,19 @@ router.post("adduser", async (req, res) => {
     const user = new User(req.body);
     await user.save();
 
+    const access = await Property.findOne({
+      _id: req.session.propertyId,
+    }).select("accessTo");
+
+    access.push({
+      userId: user._id,
+      role: user.role,
+    });
+
+    await Property.findByIdAndUpdate(req.session.propertyId, {
+      accessTo: access,
+    });
+
     //sendWelcomeMail(user.email, user.name);
     //const token = await user.generateAuthToken();
     req.session.user = sessionUser;
