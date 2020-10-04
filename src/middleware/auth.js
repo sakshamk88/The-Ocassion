@@ -8,11 +8,11 @@ const auth = async (req, res, next) => {
     return;
   }
   const property = await Property.findById(req.session.propertyId);
-
+  console.log(property);
   const hasAccess = property.accessTo.filter((user) => {
     return user.userId === req.session.user.userId;
   });
-  const isOwner = (property.owner = req.session.userId);
+  const isOwner = property.owner == req.session.userId;
 
   if (!hasAccess && !isOwner) {
     res.status(401).send({ Error: "User not authorised." });
