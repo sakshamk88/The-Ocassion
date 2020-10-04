@@ -129,39 +129,45 @@ router.put("/:uId", auth, async (req, res) => {
   }
 });
 //adding a user by admin
-router.post("adduser", async (req, res) => {
+router.post("/adduser", auth, async (req, res) => {
   try {
-    const result = userChecker(req.body);
-    if (result.errors.length !== 0) {
-      //console.log(result);
-      res.status(401).send({
-        Errors: result.errors.map((error) => {
-          return `${error.argument} is required!`;
-        }),
-      });
+    const isadmin = req.session.user.role == "admin";
+    if (!isadmin) {
+      res.status(401).send({ Error: "Not authorised." });
       return;
     }
-    const user = new User(req.body);
+
+    const newUser = {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      phoneNo: req.body.phoneNo,
+      role: "manager",
+    };
+    const user = new User(newUser);
+
     await user.save();
 
-    const access = await Property.findOne({
+    const access = await Property.find({
       _id: req.session.propertyId,
     }).select("accessTo");
 
-    access.push({
+    access[0].accessTo.push({
       userId: user._id,
       role: user.role,
     });
-
+    console.log(access);
     await Property.findByIdAndUpdate(req.session.propertyId, {
-      accessTo: access,
+      accessTo: access[0].accessTo,
     });
+
+    res.status(200).send("User added successfully");
 
     //sendWelcomeMail(user.email, user.name);
     //const token = await user.generateAuthToken();
-    req.session.user = sessionUser;
+    //req.session.user = sessionUser;
     //console.log(req.session.user);
-    res.status(201).send(sessionUser);
+    //res.status(201).send(sessionUser);
   } catch (e) {
     res.status(500).send(JSON.stringify(e));
   }

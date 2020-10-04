@@ -42,6 +42,7 @@ sessionRouter.post("", async (req, res) => {
       }
       req.session.propertyId = propertyId;
       console.log(req.session.id);
+      console.log(true);
       res.send(req.session.user);
     } else {
       throw new Error("invalid details.");
