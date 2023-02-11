@@ -24,7 +24,7 @@
     "moment-range": "^4.0.2",
     "mongodb": "^3.5.9",
     "mongoose": "^5.9.19",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.20",
     "validator": "^13.1.1"
   }
 }
